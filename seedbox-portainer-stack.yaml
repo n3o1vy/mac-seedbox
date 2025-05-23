@@ -1,0 +1,100 @@
+version: "3"
+
+services:
+  gluetun:
+    image: qmcgaw/gluetun  # Lightweight VPN container to secure all other services
+    container_name: gluetun
+    cap_add:
+      - NET_ADMIN  # Required for VPN operation to manage network settings
+    ports:
+      - 6789:6789  # Port for NZBGet
+      - 7878:7878  # Port for Radarr web UI
+      - 8989:8989  # Port for Sonarr web UI
+      - 9696:9696  # Port for Prowlarr web UI
+    volumes:
+      - /Users/username/seedbox/configs/gluetun:/gluetun  # Persistent VPN config storage
+    environment:
+      - VPN_SERVICE_PROVIDER=private internet access  # VPN provider name
+      - REGION=US California  # Server region to connect to
+      - VPN_TYPE=openvpn  # VPN protocol
+      - OPENVPN_USER=****  # VPN username
+      - OPENVPN_PASSWORD=****  # VPN password
+      - TZ=America/Los_Angeles  # Timezone
+
+  radarr:
+    image: lscr.io/linuxserver/radarr:latest  # Container image for Radarr (movie manager)
+    container_name: radarr
+    network_mode: "service:gluetun"  # Uses Gluetun’s network stack for VPN routing
+    environment:
+      - PUID=501  # User ID for file permission matching 
+      - PGID=20   # Group ID for file permission matching
+      - TZ=America/Los_Angeles  # Timezone
+      - WEBUI_PORT=7878  # Port inside container (external mapped by Gluetun)
+    volumes:
+      - /Users/username/seedbox/configs/radarr:/config  # Radarr config
+      - /Users/username/seedbox/nzbget/downloads:/downloads  # General download directory
+      - /Users/username/seedbox/nzbget/downloads/completed/movies/:/downloads-movies  # Completed movie downloads
+      - /Users/username/seedbox/radarr/movies/:/movies  # Final movie destination
+    restart: unless-stopped  # Restart policy for the container
+
+  sonarr:
+    image: lscr.io/linuxserver/sonarr:latest  # Container image for Sonarr (TV manager)
+    container_name: sonarr
+    network_mode: "service:gluetun"  # Uses Gluetun’s network stack for VPN routing
+    environment:
+      - PUID=501  # User ID for file permission matching 
+      - PGID=20  # Group ID for file permission matching
+      - TZ=America/Los_Angeles  # Timezone
+      - WEBUI_PORT=8989  # Port inside container (external mapped by Gluetun)
+    volumes:
+      - /Users/username/seedbox/configs/sonarr:/config  # Sonarr config
+      - /Users/username/seedbox/nzbget/downloads:/downloads  # General download directory
+      - /Users/username/seedbox/nzbget/downloads/completed/shows/:/downloads-shows  # Completed TV downloads
+      - /Users/username/seedbox/sonarr/tv/:/tv  # Final tv show library
+    restart: unless-stopped  # Restart policy for the container
+
+  prowlarr:
+    image: lscr.io/linuxserver/prowlarr:latest  # Container image for Prowlarr (indexer manager)
+    container_name: prowlarr
+    network_mode: "service:gluetun"  # Uses Gluetun’s network stack for VPN routing
+    environment:
+      - PUID=501  # User ID for file permission matching
+      - PGID=20   # Group ID for file permission matching
+      - TZ=America/Los_Angeles  # Timezone
+      - WEBUI_PORT=9696  # Port inside container (external mapped by Gluetun
+    volumes:
+      - /Users/username/seedbox/configs/prowlarr:/config  # Prowlarr config
+    restart: unless-stopped  # Restart policy for the container
+
+  nzbget:
+    image: lscr.io/linuxserver/nzbget:latest # Container image for NZBGet (download manager)
+    container_name: nzbget
+    network_mode: "service:gluetun"  # Uses Gluetun’s network stack for VPN routing
+    environment:
+      - PUID=501  # User ID for file permission matching
+      - PGID=20  # Group ID for file permission matching
+      - TZ=America/Los_Angeles  # Timezone
+      - WEBUI_PORT=6789  # Port inside container (external mapped by Gluetun)
+      - NZBGET_USER=nzbget  # Default username for web UI
+      - NZBGET_PASS=****  # Password 
+    volumes:
+      - /Users/username/seedbox/configs/nzbget:/config  # Nzbget config
+      - /Users/username/seedbox/nzbget/downloads:/downloads  # General download directory
+    restart: unless-stopped  # Restart policy for the container
+
+  plex:
+    image: lscr.io/linuxserver/plex:latest  # Container image for Plex (media server)
+    container_name: plex
+    ports:
+      - 32400:32400  # Port for Plex web UI
+    environment:
+      - PUID=501  # User ID for file permission matching
+      - PGID=20   # Group ID for file permission matching
+      - TZ=America/Los_Angeles  # Timezone
+      - WEBUI_PORT=32400 # Port inside container (external mapped by host)
+      - PLEX_CLAIM=[enter-claim-code]  # Claim code for Plex server for automatic authentication
+    volumes:
+      - /Users/username/seedbox/configs/plex:/config  # Plex config
+      - /Volumes/Media/movies:/movies  # Movies library
+      - /Volumes/Media/tv-shows:/tv  # TV shows library
+    restart: unless-stopped  # Restart policy for the container
