@@ -1,5 +1,4 @@
 # Mac Seedbox
-A complete macOS-based seedbox setup using Docker, Radarr, Sonarr, NZBGet, Prowlarr, Plex, and Gluetun - all managed through Portainer with secure remote access via Tailscale.
 
 ## Table of Contents
 
@@ -30,7 +29,8 @@ A complete macOS-based seedbox setup using Docker, Radarr, Sonarr, NZBGet, Prowl
 
 ## Overview
 
-This documentation outlines the setup and configuration of a macOS-based seedbox system using Docker Compose. It includes VPN tunneling, automated movie and TV show management, Usenet downloading, and media serving via Plex.
+This documentation outlines a complete macOS-based seedbox setup using Docker Compose, Radarr, Sonarr, NZBGet, Prowlarr, Plex, and Gluetun that is all managed through Portainer. It covers VPN tunneling for privacy, automated movie and TV show management, Usenet downloading, and media streaming via Plex, with secure remote access provided by Tailscale.
+
 
 ## System Configuration
 
