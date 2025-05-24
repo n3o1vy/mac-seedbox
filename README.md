@@ -97,29 +97,33 @@ brew install --cask visual-studio-code
 * **Plex**: Serves media to various devices. Configured separately from the VPN network for accessibility.
 
 ## File Structure
-These directories are automatically created the first time the Docker Compose stack is deployed through Portainer or the command line.
 
 ```
-/Users/username/seedbox/
-├── configs/
-│   ├── gluetun/
-│   ├── radarr/
-│   ├── sonarr/
-│   └── prowlarr/
-├── nzbget/
-│   └── downloads/
-│       └── completed/
-├── radarr/
-    └── movies/
-├── sonarr/
-    └── tv/
+/Users/username/seedbox/data/
+├── downloads/
+│   ├── intermediate/  # Temporary download files
+│   ├── completed/
+        └── tv/  # Completed Sonarr downloads
+        └── movies/  # Completed Radarr downloads
+├── tv/  # Final Sonarr library path
+├── movies/  # Final Radarr library path
+```
+
+The Docker compose stack will only create `/Users/username/seedbox/data` so we will need to manually create all the subfolders with these commands (replace `username` with your actual macOS user account name):
+
+```
+mkdir -p /Users/username/seedbox/data/downloads/intermediate
+mkdir -p /Users/username/seedbox/data/downloads/completed/tv
+mkdir -p /Users/username/seedbox/data/downloads/completed/movies
+mkdir -p /Users/username/seedbox/data/tv
+mkdir -p /Users/username/seedbox/data/movies
 ```
 
 ## Portainer Setup
 ### Step 1: Modify the YAML File
 Before deploying the [seedbox-portainer-stack.yaml file](./seedbox-portainer-stack.yaml), ensure that all file paths are correct for your system.
 
-By default, volume paths are set to `/Users/username/seedbox/...` We want to replace 'username' with your actual macOS user account name, otherwise Docker will attempt to mount directories that don’t exist:
+By default, volume paths are set to `/Users/username/seedbox/...` Like earlier, we want to replace 'username' with your actual macOS user account name, otherwise Docker will attempt to mount directories that don’t exist:
 1. Open the file in Visual Studio Code.
 2. Highlight an instance of username and press `CMD + F`.
 3. Click the dropdown arrow in the search bar.
@@ -148,8 +152,18 @@ After Docker is installed, run the following setup script to install Portainer:
 ### NZBGet Setup
 
 1. Access NZBGet web UI at `http://localhost:6789`.
-2. Go to `Settings → News-Servers` and enter your newshosting account details.
-3. Save and test the connection to confirm it works properly.
+2. Settings → News-Servers:
+    - Enter your newshosting account details
+    - Save and test the connection to confirm it works properly
+3. Settings → Paths:
+    - `MainDir`: `/data/downloads/intermediate`
+    - `InterDir`: `${MainDir}`
+    - Leave `DestDir` blank
+4. NZBGet → Settings → Categories:
+    - Category: `movies`
+        - `DestDir:` `/data/downloads/completed/movies`
+    - Category: `tv`:
+        - `DestDir`: `/data/downloads/completed/tv`
 
 ### Radarr Setup
 1. Access Radarr at http://localhost:7878.
@@ -158,7 +172,7 @@ After Docker is installed, run the following setup script to install Portainer:
     - Movie Naming → Enable 'Rename Movies'
     - Movie Naming → Standard Movie Format → Remove '{Quality Full}'
     - File Management → Check 'Unmonitor Deleted Movies'
-    - Root Folders → Add Root Folder → `/downloads-movies`
+    - Root Folders → Add Root Folder → `/data/movies`
     - Save Changes
 4. Settings → General:
     - Copy the API key from General settings and save it somewhere accessible, it will be needed when configuring Prowlarr.
@@ -166,6 +180,7 @@ After Docker is installed, run the following setup script to install Portainer:
     - Click on +
     - Select NZBGet
     - Change password to the one you created in the YAML file
+    - Set Category to `movies`
     - Click on 'Test Server' and then click 'Save'
 
 ### Sonarr Setup
@@ -183,6 +198,7 @@ After Docker is installed, run the following setup script to install Portainer:
     - Click on +
     - Select NZBGet
     - Change password to the one you created in the YAML file
+    - Set Category to `tv`
     - Click on 'Test Server' and then click 'Save'
 
 ### Prowlarr Setup
@@ -220,6 +236,7 @@ Searching and adding movies to download:
 4. After adding, click on the movie title and choose 'Interactive Search'
 5. Click the download icon next to your desired file
 6. Monitor the download progress in the NZBGet web UI
+7. Completed downloads will be at `/Users/username/seedbox/data/movies`
 
 ### Sonarr Usage
 
@@ -231,6 +248,7 @@ Searching and adding tv shows to download:
 5. Click 'Interactive Search' next to the desired season
 6. Click the download icon next to your preferred episode files
 7. Monitor the download progress in the NZBGet web UI
+8. Completed downloads will be at `/Users/username/seedbox/data/movies`
 
 ## Subler
 
