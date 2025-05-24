@@ -158,7 +158,7 @@ After Docker is installed, run the following setup script to install Portainer:
 3. Settings → Paths:
     - `MainDir`: `/data/downloads/intermediate`
     - `InterDir`: `${MainDir}`
-    - Leave `DestDir` blank
+    - `DestDir` `/data/downloads/completed`
 4. NZBGet → Settings → Categories:
     - Category: `movies`
         - `DestDir:` `/data/downloads/completed/movies`
