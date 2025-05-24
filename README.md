@@ -190,7 +190,7 @@ After Docker is installed, run the following setup script to install Portainer:
     - Episode Naming → Enable 'Rename Episodes'
     - Episode Naming → Standard Episode Format → Remove '{Quality Full}'
     - File Management → Check 'Unmonitor Deleted Episodes'
-    - Root Folders → Add Root Folder → `/downloads-shows`
+    - Root Folders → Add Root Folder → `/data/tv`
     - Save Changes
 4. Settings → Download Clients:
     - Click on +
