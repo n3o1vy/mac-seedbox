@@ -180,7 +180,7 @@ After Docker is installed, run the following setup script to install Portainer:
     - Change password to the one you created in the YAML file
     - Set Category to `movies`
     - Click on 'Test Server' and then click 'Save'
-5. Settings → General:
+5. Settings → General → Security:
     - Copy the API key from General settings and save it somewhere accessible, it will be needed when configuring Prowlarr.
 
 ### Sonarr Setup
@@ -198,7 +198,7 @@ After Docker is installed, run the following setup script to install Portainer:
     - Change password to the one you created in the YAML file
     - Set Category to `tv`
     - Click on 'Test Server' and then click 'Save'
-5. Settings → General:
+5. Settings → General → Security:
     - Copy the API key from General settings and save it somewhere accessible, it will be needed when configuring Prowlarr.
 
 ### Prowlarr Setup
