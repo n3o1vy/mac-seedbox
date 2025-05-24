@@ -45,7 +45,6 @@ services:
       - TZ=America/Los_Angeles  # Timezone
       - WEBUI_PORT=8989  # Port inside container (external mapped by Gluetun)
     volumes:
-    volumes:
       - /Users/username/seedbox/configs/sonarr:/config  # Sonarr config
       - /Users/username/seedbox/data:/data  # Persistent data storage
     restart: unless-stopped  # Restart policy for the container
@@ -58,7 +57,7 @@ services:
       - PUID=501  # User ID for file permission matching
       - PGID=20   # Group ID for file permission matching
       - TZ=America/Los_Angeles  # Timezone
-      - WEBUI_PORT=9696  # Port inside container (external mapped by Gluetun
+      - WEBUI_PORT=9696  # Port inside container (external mapped by Gluetun)
     volumes:
       - /Users/username/seedbox/configs/prowlarr:/config  # Prowlarr config
     restart: unless-stopped  # Restart policy for the container
