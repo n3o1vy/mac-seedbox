@@ -174,14 +174,14 @@ After Docker is installed, run the following setup script to install Portainer:
     - File Management → Check 'Unmonitor Deleted Movies'
     - Root Folders → Add Root Folder → `/data/movies`
     - Save Changes
-4. Settings → General:
-    - Copy the API key from General settings and save it somewhere accessible, it will be needed when configuring Prowlarr.
-5. Settings → Download Clients:
+4. Settings → Download Clients:
     - Click on +
     - Select NZBGet
     - Change password to the one you created in the YAML file
     - Set Category to `movies`
     - Click on 'Test Server' and then click 'Save'
+5. Settings → General:
+    - Copy the API key from General settings and save it somewhere accessible, it will be needed when configuring Prowlarr.
 
 ### Sonarr Setup
 1. Access Sonarr at http://localhost:8989.
@@ -192,14 +192,14 @@ After Docker is installed, run the following setup script to install Portainer:
     - File Management → Check 'Unmonitor Deleted Episodes'
     - Root Folders → Add Root Folder → `/downloads-shows`
     - Save Changes
-4. Settings → General:
-    - Copy the API key from General settings and save it somewhere accessible, it will be needed when configuring Prowlarr.
-5. Settings → Download Clients:
+4. Settings → Download Clients:
     - Click on +
     - Select NZBGet
     - Change password to the one you created in the YAML file
     - Set Category to `tv`
     - Click on 'Test Server' and then click 'Save'
+5. Settings → General:
+    - Copy the API key from General settings and save it somewhere accessible, it will be needed when configuring Prowlarr.
 
 ### Prowlarr Setup
 
