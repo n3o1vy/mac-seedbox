@@ -42,7 +42,6 @@ Before setting up the stack, ensure macOS is configured for server use:
    * Enable "Start up automatically after a power failure"
 3. **Sharing Preferences**:
    * Enable Remote Management with access for specific users
-   * Enable File Sharing (optional if using Remote Management)
    * Adjust local hostname if desired
 4. **Lock Screen Settings**:
    * Disable screen saver and display sleep
