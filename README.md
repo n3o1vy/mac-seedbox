@@ -40,13 +40,14 @@ Before setting up the stack, ensure macOS is configured for server use:
 2. **Energy Settings**:
    * Enable "Wake for network access"
    * Enable "Start up automatically after a power failure"
-3. **Sharing Preferences**:
-   * Enable Remote Management with access for specific users
+3. **General → Sharing → Advanced**:
+   * Enable Remote Management with access for specific users → your user account
+4.   **General → Sharing → Local hostname**:
    * Adjust local hostname if desired
-4. **Lock Screen Settings**:
+5. **Lock Screen**:
    * Disable screen saver and display sleep
    * Disable password requirement after inactivity
-5. **Login Settings**:
+6. **Users & Login automatically as**:
    * Enable automatic login for the configured user
 
 ## Software Installation
