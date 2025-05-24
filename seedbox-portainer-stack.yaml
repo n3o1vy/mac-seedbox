@@ -31,8 +31,8 @@ services:
       - TZ=America/Los_Angeles  # Timezone
       - WEBUI_PORT=7878  # Port inside container (external mapped by Gluetun)
     volumes:
-      - /Users/ej/seedbox/configs/radarr:/config  # Radarr config
-      - /Users/ej/seedbox/data:/data  # Persistent data storage
+      - /Users/username/seedbox/configs/radarr:/config  # Radarr config
+      - /Users/username/seedbox/data:/data  # Persistent data storage
     restart: unless-stopped  # Restart policy for the container
 
   sonarr:
@@ -46,8 +46,8 @@ services:
       - WEBUI_PORT=8989  # Port inside container (external mapped by Gluetun)
     volumes:
     volumes:
-      - /Users/ej/seedbox/configs/sonarr:/config  # Sonarr config
-      - /Users/ej/seedbox/data:/data  # Persistent data storage
+      - /Users/username/seedbox/configs/sonarr:/config  # Sonarr config
+      - /Users/username/seedbox/data:/data  # Persistent data storage
     restart: unless-stopped  # Restart policy for the container
 
   prowlarr:
@@ -60,7 +60,7 @@ services:
       - TZ=America/Los_Angeles  # Timezone
       - WEBUI_PORT=9696  # Port inside container (external mapped by Gluetun
     volumes:
-      - /Users/ej/seedbox/configs/prowlarr:/config  # Prowlarr config
+      - /Users/username/seedbox/configs/prowlarr:/config  # Prowlarr config
     restart: unless-stopped  # Restart policy for the container
 
   nzbget:
@@ -75,8 +75,8 @@ services:
       - NZBGET_USER=nzbget  # Default username for web UI
       - NZBGET_PASS=****  # Password 
     volumes:
-      - /Users/ej/seedbox/configs/nzbget:/config  # NZBGet config
-      - /Users/ej/seedbox/data:/data  # Persistent data storage
+      - /Users/username/seedbox/configs/nzbget:/config  # NZBGet config
+      - /Users/username/seedbox/data:/data  # Persistent data storage
     restart: unless-stopped  # Restart policy for the container
 
   plex:
