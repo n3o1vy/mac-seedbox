@@ -2,30 +2,30 @@
 
 ## Table of Contents
 
-* [Overview](#overview)  
-* [System Configuration](#system-configuration)  
-* [Software Installation](#software-installation)  
-* [Seedbox Stack Architecture](#seedbox-stack-architecture)  
-  * [Network Privacy Layer](#network-privacy-layer)  
-  * [Media Managers](#media-managers)  
-  * [Download Client](#download-client)  
-  * [Media Server](#media-server)  
-* [File Structure](#file-structure)  
-* [Portainer Setup](#portainer-setup)  
-  * [Step 1: Modify the YAML File](#step-1-modify-the-yaml-file)  
-  * [Step 2: Install Portainer](#step-2-install-portainer)  
-  * [Step 3: Deploy the Stack](#step-3-deploy-the-stack)  
-* [Setup Instructions](#setup-instructions)  
-  * [NZBGet Setup](#nzbget-setup)  
-  * [Radarr Setup](#radarr-setup)  
-  * [Sonarr Setup](#sonarr-setup)  
-  * [Prowlarr Setup](#prowlarr-setup)  
-  * [Plex Setup](#plex-setup)  
-* [Using Usenet](#using-usenet)  
-  * [Radarr Usage](#radarr-usage)  
-  * [Sonarr Usage](#sonarr-usage)  
-* [Subler](#subler)  
-* [Setting Up Tailscale](#setting-up-tailscale)
+- [Overview](#overview)  
+- [System Configuration](#system-configuration)  
+- [Software Installation](#software-installation)  
+- [Seedbox Stack Architecture](#seedbox-stack-architecture)  
+  - [Network Privacy Layer](#network-privacy-layer)  
+  - [Media Managers](#media-managers)  
+  - [Download Client](#download-client)  
+  - [Media Server](#media-server)  
+- [File Structure](#file-structure)  
+- [Portainer Setup](#portainer-setup)  
+  - [Step 1: Modify the YAML File](#step-1-modify-the-yaml-file)  
+  - [Step 2: Install Portainer](#step-2-install-portainer)  
+  - [Step 3: Deploy the Stack](#step-3-deploy-the-stack)  
+- [Setup Instructions](#setup-instructions)  
+  - [NZBGet Setup](#nzbget-setup)  
+  - [Radarr Setup](#radarr-setup)  
+  - [Sonarr Setup](#sonarr-setup)  
+  - [Prowlarr Setup](#prowlarr-setup)  
+  - [Plex Setup](#plex-setup)  
+- [Using Usenet](#using-usenet)  
+  - [Radarr Usage](#radarr-usage)  
+  - [Sonarr Usage](#sonarr-usage)  
+- [Subler](#subler)  
+- [Setting Up Tailscale](#setting-up-tailscale)
 
 ## Overview
 
@@ -38,17 +38,17 @@ Before setting up the stack, ensure macOS is configured for server use:
 
 1. **Networking**: Disable Wi-Fi if connected via Ethernet.
 2. **Energy Settings**:
-   * Enable "Wake for network access"
-   * Enable "Start up automatically after a power failure"
+   - Enable "Wake for network access"
+   - Enable "Start up automatically after a power failure"
 3. **General → Sharing → Advanced**:
-   * Enable Remote Management with access for specific users → your user account
+   - Enable Remote Management with access for specific users → your user account
 4. **General → Sharing → Local hostname**:
-    * Adjust local hostname if desired
+    - Adjust local hostname if desired
 5. **Lock Screen**:
-   * Disable screen saver and display sleep
-   * Disable password requirement after inactivity
+   - Disable screen saver and display sleep
+   - Disable password requirement after inactivity
 6. **Users & Login automatically as**:
-   * Enable automatic login for the configured user
+   - Enable automatic login for the configured user
 
 ## Software Installation
 [Homebrew](https://brew.sh) is a package manager for macOS (and Linux) that makes it easy to install, update, and manage software and command-line tools directly from the terminal.
@@ -80,21 +80,21 @@ brew install --cask visual-studio-code
 
 ### Network Privacy Layer
 
-* Gluetun: Acts as the VPN gateway for all other containers in the stack. This means that Radarr, Sonarr, NZBGet, and Prowlarr share Gluetun's network stack using `network_mode: "service:gluetun"`. This setup ensures:
+- Gluetun: Acts as the VPN gateway for all other containers in the stack. This means that Radarr, Sonarr, NZBGet, and Prowlarr share Gluetun's network stack using `network_mode: "service:gluetun"`. This setup ensures:
     - All traffic is securely tunneled through the VPN (in this case, Private Internet Access).
     - These containers do not expose their own ports directly.
     - If the VPN connection goes down, none of the services will inadvertently leak traffic.
 
 ### Media Managers
-* **Radarr**: Handles movie management and downloads.
-* **Sonarr**: Handles TV series management and downloads.
-* **Prowlarr**: Centralized indexer manager to integrate Usenet indexers with Radarr and Sonarr.
+- **Radarr**: Handles movie management and downloads.
+- **Sonarr**: Handles TV series management and downloads.
+- **Prowlarr**: Centralized indexer manager to integrate Usenet indexers with Radarr and Sonarr.
 
 ### Download Client
-* **NZBGet**: Usenet download client that communicates with Radarr and Sonarr.
+- **NZBGet**: Usenet download client that communicates with Radarr and Sonarr.
 
 ### Media Server
-* **Plex**: Serves media to various devices. Configured separately from the VPN network for accessibility.
+- **Plex**: Serves media to various devices. Configured separately from the VPN network for accessibility.
 
 ## File Structure
 
@@ -179,7 +179,7 @@ After Docker is installed, run the following setup script to install Portainer:
     - Select NZBGet
     - Change password to the one you created in the YAML file
     - Set Category to `movies`
-    - Click on 'Test Server' and then click 'Save'
+    - Click on 'Test' and then click 'Save'
 5. Settings → General → Security:
     - Copy the API key from General settings and save it somewhere accessible, it will be needed when configuring Prowlarr.
 
@@ -197,7 +197,7 @@ After Docker is installed, run the following setup script to install Portainer:
     - Select NZBGet
     - Change password to the one you created in the YAML file
     - Set Category to `tv`
-    - Click on 'Test Server' and then click 'Save'
+    - Click on 'Test' and then click 'Save'
 5. Settings → General → Security:
     - Copy the API key from General settings and save it somewhere accessible, it will be needed when configuring Prowlarr.
 
@@ -206,15 +206,16 @@ After Docker is installed, run the following setup script to install Portainer:
 1. Access the web UI at `http://localhost:9696`.
 2. Set login credentials.
 3. Add indexers:
-   * Go to Settings → Indexers
-   * Click '+ Add Indexer'
-   * Select your Usenet indexer (e.g., NZBGeek)
-   * Input API key and URL from your indexer provider
+   - Go to Settings → Indexers
+   - Click '+ Add Indexer'
+   - Select your Usenet indexer (e.g., NZBGeek)
+   - Input API key and URL from your indexer provider
 4. Add applications (Radarr, Sonarr):
-   * Go to Settings → Apps
-   * Click '+ Add Application'
-   * Select 'Radarr' or 'Sonarr' accordingly
-   * Paste their respective API keys and test connection
+   - Go to Settings → Apps
+   - Click '+ Add Application'
+   - Select 'Radarr' or 'Sonarr' accordingly
+   - Paste their respective API keys and test connection
+   - Click on 'Test' and then click 'Save'
 5. Confirm that indexers and apps are syncing correctly.
 
 ### Plex Setup
@@ -222,8 +223,8 @@ After Docker is installed, run the following setup script to install Portainer:
 1. Access the web UI at `http://localhost:32400/web`.
 2. Log in to your Plex account and complete the setup wizard.
 3. Add libraries:
-   * Movies: `/movies`
-   * TV Shows: `/tv`
+   - Movies: `/movies`
+   - TV Shows: `/tv`
 5. Ensure external media directories (e.g., `/Volumes/Media`) are mounted and readable.
 6. Test playback from another device on your network.
 
