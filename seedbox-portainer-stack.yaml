@@ -31,10 +31,8 @@ services:
       - TZ=America/Los_Angeles  # Timezone
       - WEBUI_PORT=7878  # Port inside container (external mapped by Gluetun)
     volumes:
-      - /Users/username/seedbox/configs/radarr:/config  # Radarr config
-      - /Users/username/seedbox/nzbget/downloads:/downloads  # General download directory
-      - /Users/username/seedbox/nzbget/downloads/completed/movies/:/downloads-movies  # Completed movie downloads
-      - /Users/username/seedbox/radarr/movies/:/movies  # Final movie destination
+      - /Users/ej/seedbox/configs/radarr:/config  # Radarr config
+      - /Users/ej/seedbox/data:/data  # Persistent data storage
     restart: unless-stopped  # Restart policy for the container
 
   sonarr:
@@ -47,10 +45,9 @@ services:
       - TZ=America/Los_Angeles  # Timezone
       - WEBUI_PORT=8989  # Port inside container (external mapped by Gluetun)
     volumes:
-      - /Users/username/seedbox/configs/sonarr:/config  # Sonarr config
-      - /Users/username/seedbox/nzbget/downloads:/downloads  # General download directory
-      - /Users/username/seedbox/nzbget/downloads/completed/shows/:/downloads-shows  # Completed TV downloads
-      - /Users/username/seedbox/sonarr/tv/:/tv  # Final tv show library
+    volumes:
+      - /Users/ej/seedbox/configs/sonarr:/config  # Sonarr config
+      - /Users/ej/seedbox/data:/data  # Persistent data storage
     restart: unless-stopped  # Restart policy for the container
 
   prowlarr:
@@ -63,7 +60,7 @@ services:
       - TZ=America/Los_Angeles  # Timezone
       - WEBUI_PORT=9696  # Port inside container (external mapped by Gluetun
     volumes:
-      - /Users/username/seedbox/configs/prowlarr:/config  # Prowlarr config
+      - /Users/ej/seedbox/configs/prowlarr:/config  # Prowlarr config
     restart: unless-stopped  # Restart policy for the container
 
   nzbget:
@@ -78,8 +75,8 @@ services:
       - NZBGET_USER=nzbget  # Default username for web UI
       - NZBGET_PASS=****  # Password 
     volumes:
-      - /Users/username/seedbox/configs/nzbget:/config  # Nzbget config
-      - /Users/username/seedbox/nzbget/downloads:/downloads  # General download directory
+      - /Users/ej/seedbox/configs/nzbget:/config  # NZBGet config
+      - /Users/ej/seedbox/data:/data  # Persistent data storage
     restart: unless-stopped  # Restart policy for the container
 
   plex:
