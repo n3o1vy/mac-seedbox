@@ -20,7 +20,7 @@ services:
       - OPENVPN_USER=****  # VPN username
       - OPENVPN_PASSWORD=****  # VPN password
       - TZ=America/Los_Angeles  # Timezone
-
+    restart: unless-stopped  # Restart policy for the container
   radarr:
     image: lscr.io/linuxserver/radarr:latest  # Container image for Radarr (movie manager)
     container_name: radarr
