@@ -15,6 +15,7 @@
   - [Step 1: Modify the YAML File](#step-1-modify-the-yaml-file)  
   - [Step 2: Install Portainer](#step-2-install-portainer)  
   - [Step 3: Deploy the Stack](#step-3-deploy-the-stack)  
+- [Updating the Stack](#updating-the-stack)
 - [Setup Instructions](#setup-instructions)  
   - [NZBGet Setup](#nzbget-setup)  
   - [Radarr Setup](#radarr-setup)  
@@ -101,12 +102,15 @@ brew install --cask visual-studio-code
 ```
 /Users/username/seedbox/data/
 ├── downloads/
-│   ├── intermediate/  # Temporary download files
+│   ├── intermediate/  # Active downloads, repair, and unpacking
 │   ├── completed/
-        └── tv/  # Completed Sonarr downloads
-        └── movies/  # Completed Radarr downloads
-├── tv/  # Final Sonarr library path
-├── movies/  # Final Radarr library path
+│   │   ├── tv/        # Completed downloads awaiting Sonarr import
+│   │   └── movies/    # Completed downloads awaiting Radarr import
+│   ├── nzb/           # NZBGet watch folder
+│   ├── queue/         # NZBGet queue and history state
+│   └── tmp/           # NZBGet temporary files
+├── tv/                # Final Sonarr library path
+└── movies/            # Final Radarr library path
 ```
 
 The Docker compose stack will only create `/Users/username/seedbox/data` so we will need to manually create all the subfolders with these commands (replace `username` with your actual macOS user account name):
@@ -115,6 +119,9 @@ The Docker compose stack will only create `/Users/username/seedbox/data` so we w
 mkdir -p /Users/username/seedbox/data/downloads/intermediate
 mkdir -p /Users/username/seedbox/data/downloads/completed/tv
 mkdir -p /Users/username/seedbox/data/downloads/completed/movies
+mkdir -p /Users/username/seedbox/data/downloads/nzb
+mkdir -p /Users/username/seedbox/data/downloads/queue
+mkdir -p /Users/username/seedbox/data/downloads/tmp
 mkdir -p /Users/username/seedbox/data/tv
 mkdir -p /Users/username/seedbox/data/movies
 ```
@@ -146,6 +153,24 @@ After Docker is installed, run the following setup script to install Portainer:
 4. Click "+ Stack", either paste in the contents of `seedbox-portainer-stack.yaml` or directly upload the file.
 5. Scroll down and click "Deploy the stack"
 
+## Updating the Stack
+
+To update all images in Portainer:
+
+1. Open **Portainer → local → Stacks** and select the seedbox stack.
+2. Open the **Editor** tab.
+3. Enable **Re-pull image** (called **Pull latest image** in older releases).
+4. Click **Update the stack** and confirm the redeployment.
+
+If managing the Compose file from Terminal instead, run the following commands from the directory containing `seedbox-portainer-stack.yaml`:
+
+```bash
+docker compose -f seedbox-portainer-stack.yaml pull
+docker compose -f seedbox-portainer-stack.yaml up -d --remove-orphans
+```
+
+Persistent configuration and media are retained through the configured volume mounts. Restarting a container without pulling and recreating it does not update its image.
+
 
 ## Setup Instructions
 
@@ -156,14 +181,25 @@ After Docker is installed, run the following setup script to install Portainer:
     - Enter your newshosting account details
     - Save and test the connection to confirm it works properly
 3. Settings → Paths:
-    - `MainDir`: `/data/downloads/intermediate`
-    - `InterDir`: `${MainDir}`
-    - `DestDir` `/data/downloads/completed`
-4. NZBGet → Settings → Categories:
+    - `MainDir`: `/data/downloads`
+    - `InterDir`: `${MainDir}/intermediate`
+    - `DestDir`: `${MainDir}/completed`
+    - `NzbDir`: `${MainDir}/nzb`
+    - `QueueDir`: `${MainDir}/queue`
+    - `TempDir`: `${MainDir}/tmp`
+4. Settings → Download Queue:
+    - `ArticleCache`: `200` MB
+    - `WriteBuffer`: `1024` KB
+    - `DirectWrite`: `Yes` when `/data/downloads` is on local APFS storage. Leave it disabled for network shares or incompatible external filesystems.
+    - `HealthCheck`: `Delete`. This records an unrecoverable download as failed instead of leaving it paused, allowing Radarr or Sonarr to request a replacement.
+5. Settings → Categories:
     - Category: `movies`
         - `DestDir:` `/data/downloads/completed/movies`
     - Category: `tv`:
         - `DestDir`: `/data/downloads/completed/tv`
+6. Save all changes and reload NZBGet.
+
+`MainDir`, `InterDir`, and `DestDir` must not point to the same folder. NZBGet downloads and unpacks in `InterDir`, moves successful jobs to the category destination, and then Radarr or Sonarr imports them into the final library.
 
 ### Radarr Setup
 1. Access Radarr at http://localhost:7878.
@@ -179,8 +215,20 @@ After Docker is installed, run the following setup script to install Portainer:
     - Select NZBGet
     - Change password to the one you created in the YAML file
     - Set Category to `movies`
+    - Enable `Remove Completed` and `Remove Failed`
     - Click on 'Test' and then click 'Save'
-5. Settings → General → Security:
+5. Settings → Download Clients → Show Advanced Settings:
+    - Enable `Completed Download Handling`
+    - Enable `Redownload Failed`
+    - Enable `Redownload Failed from Interactive Search`
+    - Enable removal of failed downloads
+6. Settings → Profiles → Quality Profiles:
+    - Create a profile named `4K WEB with fallback`
+    - Enable `WEB 2160p` and `WEB 1080p`, with `WEB 2160p` ranked above `WEB 1080p`
+    - Enable upgrades and set `Upgrade Until` to `WEB 2160p`
+7. Settings → Indexers → Show Advanced Settings:
+    - Set `Maximum Size` to `10240` MB for a global 10 GB release limit, or `8192` MB for 8 GB
+8. Settings → General → Security:
     - Copy the API key from General settings and save it somewhere accessible, it will be needed when configuring Prowlarr.
 
 ### Sonarr Setup
@@ -197,8 +245,20 @@ After Docker is installed, run the following setup script to install Portainer:
     - Select NZBGet
     - Change password to the one you created in the YAML file
     - Set Category to `tv`
+    - Enable `Remove Completed` and `Remove Failed`
     - Click on 'Test' and then click 'Save'
-5. Settings → General → Security:
+5. Settings → Download Clients → Show Advanced Settings:
+    - Enable `Completed Download Handling`
+    - Enable `Redownload Failed`
+    - Enable `Redownload Failed from Interactive Search`
+    - Enable removal of failed downloads
+6. Settings → Profiles → Quality Profiles:
+    - Create a profile named `4K WEB with fallback`
+    - Enable `WEB 2160p` and `WEB 1080p`, with `WEB 2160p` ranked above `WEB 1080p`
+    - Enable upgrades and set `Upgrade Until` to `WEB 2160p`
+7. Settings → Indexers → Show Advanced Settings:
+    - Set `Maximum Size` to `10240` MB for a global 10 GB per-episode limit, or `8192` MB for 8 GB
+8. Settings → General → Security:
     - Copy the API key from General settings and save it somewhere accessible, it will be needed when configuring Prowlarr.
 
 ### Prowlarr Setup
@@ -206,7 +266,7 @@ After Docker is installed, run the following setup script to install Portainer:
 1. Access the web UI at `http://localhost:9696`.
 2. Set login credentials.
 3. Add indexers:
-   - Go to Settings → Indexers
+   - Select **Indexers** in the main sidebar. Do not use **Settings → Indexers**, which contains optional proxy and global indexer settings.
    - Click '+ Add Indexer'
    - Select your Usenet indexer (e.g., NZBGeek)
    - Input API key and URL from your indexer provider
@@ -225,6 +285,10 @@ After Docker is installed, run the following setup script to install Portainer:
 3. Add libraries:
    - Movies: `/movies`
    - TV Shows: `/tv`
+4. Settings → Server → Library:
+   - Enable `Scan my library automatically`
+   - Enable `Run a partial scan when changes are detected`
+   - Optionally enable a periodic scan every 15 minutes as a fallback
 5. Ensure external media directories (e.g., `/Volumes/Media`) are mounted and readable.
 6. Test playback from another device on your network.
 
@@ -233,23 +297,22 @@ After Docker is installed, run the following setup script to install Portainer:
 Searching and adding movies to download:
 1. Click on 'Movies' in the left sidebar
 2. Use the search bar to find a movie
-3. Before clicking 'Add Movie', uncheck 'Start search for missing movie'
-4. After adding, click on the movie title and choose 'Interactive Search'
-5. Click the download icon next to your desired file
-6. Monitor the download progress in the NZBGet web UI
-7. Completed downloads will be at `/Users/username/seedbox/data/movies`
+3. Select the desired quality profile and enable 'Start search for missing movie'
+4. Click 'Add Movie'. Radarr will select the best qualifying release, send it to NZBGet, import it, and upgrade it later if a higher-ranked allowed quality becomes available.
+5. Use 'Interactive Search' only when you want to choose a release manually.
+6. Monitor the download progress in the NZBGet web UI.
+7. Imported movies will be located at `/Users/username/seedbox/data/movies`.
 
 ### Sonarr Usage
 
 Searching and adding tv shows to download:
 1. Click on 'Series' in the left sidebar
 2. Use the search bar to find a show
-3. Before clicking 'Add Series', uncheck 'Start search for missing series'
-4. After adding, click on the series title
-5. Click 'Interactive Search' next to the desired season
-6. Click the download icon next to your preferred episode files
-7. Monitor the download progress in the NZBGet web UI
-8. Completed downloads will be at `/Users/username/seedbox/data/movies`
+3. Select the desired quality profile and enable 'Start search for missing series'
+4. Click 'Add Series'. Sonarr will select the best qualifying episodes, send them to NZBGet, import them, and upgrade them later if a higher-ranked allowed quality becomes available.
+5. Use 'Interactive Search' only when you want to choose releases manually.
+6. Monitor the download progress in the NZBGet web UI.
+7. Imported episodes will be located at `/Users/username/seedbox/data/tv`.
 
 ## Subler
 
